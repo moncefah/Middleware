@@ -2,11 +2,13 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/moncefah/TimeTableAlerter/internal/controllers/users"
+	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/sirupsen/logrus"
-	"middleware/example/internal/controllers/users"
-	"middleware/example/internal/helpers"
-	_ "middleware/example/internal/models"
+
 	"net/http"
+
+	_ "github.com/moncefah/TimeTableAlerter/internal/models"
 )
 
 func main() {
@@ -33,6 +35,17 @@ func init() {
 		`CREATE TABLE IF NOT EXISTS users (
 			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
 			name VARCHAR(255) NOT NULL
+		);`,
+		`CREATE TABLE IF NOT EXISTS agendas (
+			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
+			name VARCHAR(255) NOT NULL,
+    		uca_id VARCHAR(255) 
+		);`,
+		`CREATE TABLE IF NOT EXISTS alerts (
+			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
+			agenda_id VARCHAR(255) NOT NULL ,
+    		email VARCHAR(255) NOT NULL,
+    		FOREIGN KEY (agenda_id) REFERENCES agendas(id)
 		);`,
 	}
 	for _, scheme := range schemes {
