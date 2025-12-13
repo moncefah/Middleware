@@ -2,8 +2,8 @@ package users
 
 import (
 	"github.com/gofrs/uuid"
-	"middleware/example/internal/helpers"
-	"middleware/example/internal/models"
+	"github.com/moncefah/TimeTableAlerter/internal/helpers"
+	"github.com/moncefah/TimeTableAlerter/internal/models"
 )
 
 func GetAllUsers() ([]models.User, error) {

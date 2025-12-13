@@ -7,12 +7,18 @@ import (
 )
 
 func OpenDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "file:users.db")
+	db, err := sql.Open("sqlite3", "timetable.db?_foreign_keys=on")
+
 	if err != nil {
-		db.SetMaxOpenConns(1)
+		return nil, err
 	}
-	return db, err
+
+	// IMPORTANT : une seule connexion pour SQLite
+	db.SetMaxOpenConns(1)
+
+	return db, nil
 }
+
 func CloseDB(db *sql.DB) {
 	err := db.Close()
 	if err != nil {

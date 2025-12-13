@@ -2,9 +2,10 @@ package helpers
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
-	"middleware/example/internal/models"
 	"net/http"
+
+	"github.com/moncefah/TimeTableAlerter/internal/models"
+	"github.com/sirupsen/logrus"
 )
 
 // RespondError

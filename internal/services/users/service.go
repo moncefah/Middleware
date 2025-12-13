@@ -3,10 +3,11 @@ package users
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/gofrs/uuid"
+	"github.com/moncefah/TimeTableAlerter/internal/models"
+	repository "github.com/moncefah/TimeTableAlerter/internal/repositories/users"
 	"github.com/sirupsen/logrus"
-	"middleware/example/internal/models"
-	repository "middleware/example/internal/repositories/users"
 )
 
 func GetAllUsers() ([]models.User, error) {

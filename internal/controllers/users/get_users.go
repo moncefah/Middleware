@@ -2,9 +2,10 @@ package users
 
 import (
 	"encoding/json"
-	"middleware/example/internal/helpers"
-	"middleware/example/internal/services/users"
 	"net/http"
+
+	"github.com/moncefah/TimeTableAlerter/internal/helpers"
+	"github.com/moncefah/TimeTableAlerter/internal/services/users"
 )
 
 // GetUsers

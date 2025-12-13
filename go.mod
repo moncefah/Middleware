@@ -1,4 +1,4 @@
-module middleware/example
+module github.com/moncefah/TimeTableAlerter
 
 go 1.23
 

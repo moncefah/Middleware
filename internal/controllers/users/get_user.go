@@ -2,10 +2,11 @@ package users
 
 import (
 	"encoding/json"
-	"github.com/gofrs/uuid"
-	"middleware/example/internal/helpers"
-	"middleware/example/internal/services/users"
 	"net/http"
+
+	"github.com/gofrs/uuid"
+	"github.com/moncefah/TimeTableAlerter/internal/helpers"
+	"github.com/moncefah/TimeTableAlerter/internal/services/users"
 )
 
 // GetUser
