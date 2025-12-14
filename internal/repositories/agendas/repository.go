@@ -46,3 +46,21 @@ func GetAgendaById(id uuid.UUID) (*models.Agenda, error) {
 	}
 	return &data, err
 }
+
+func CreateAgenda(agenda *models.Agenda) (*models.Agenda, error) {
+
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return nil, err
+	}
+	_, err = db.Exec(
+		`INSERT INTO agendas (id, name, uca_id) VALUES (?, ?, ?)`,
+		agenda.ID,
+		agenda.Name,
+		agenda.UcaID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return agenda, nil
+}

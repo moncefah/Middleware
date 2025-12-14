@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
-
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/sirupsen/logrus"
 
@@ -56,6 +55,8 @@ func init() {
 			agenda_id VARCHAR(255) NOT NULL ,
     		email VARCHAR(255) NOT NULL,
     		FOREIGN KEY (agenda_id) REFERENCES agendas(id)
+    		ON DELETE CASCADE
+
 		);`,
 	}
 	for _, scheme := range schemes {
@@ -63,5 +64,6 @@ func init() {
 			logrus.Fatalln("Could not generate table ! Error was : " + err.Error())
 		}
 	}
+
 	helpers.CloseDB(db)
 }
