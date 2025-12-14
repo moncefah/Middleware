@@ -1,4 +1,4 @@
-package users
+package agendas
 
 import (
 	"encoding/json"
@@ -6,14 +6,14 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
-	"github.com/moncefah/TimeTableAlerter/internal/services/users"
+	"github.com/moncefah/TimeTableAlerter/internal/services/agendas"
 )
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetAgenda(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userId, _ := ctx.Value("userId").(uuid.UUID) // getting key set in context.go
+	agendaId, _ := ctx.Value("agendaId").(uuid.UUID) // getting key set in context.go
 
-	user, err := users.GetUserById(userId)
+	agenda, err := agendas.GetAgendaById(agendaId)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)
@@ -24,7 +24,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(user)
+	body, _ := json.Marshal(agenda)
 	_, _ = w.Write(body)
 	return
 }

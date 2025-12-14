@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/users"
+
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/sirupsen/logrus"
 
@@ -19,6 +21,15 @@ func main() {
 		r.Route("/{id}", func(r chi.Router) { // route /users/{id}
 			r.Use(users.Context)      // Use Context method to get user ID
 			r.Get("/", users.GetUser) // GET /users/{id}
+		})
+	})
+	r.Route("/agendas", func(r chi.Router) {
+		r.Get("/", agendas.GetAgendas)
+
+		r.Route("/{id}", func(r chi.Router) {
+			r.Use(agendas.Context)
+			r.Get("/", agendas.GetAgenda)
+
 		})
 	})
 
