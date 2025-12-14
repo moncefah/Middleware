@@ -4,10 +4,6 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type User struct {
-	Id   *uuid.UUID `json:"id"`
-	Name string     `json:"name"`
-}
 type Agenda struct {
 	ID    uuid.UUID `json:"id"`    // identifiant interne
 	Name  string    `json:"name"`  // nom lisible (ex: "M1 ISIMA groupe A")

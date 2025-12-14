@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
-	"github.com/moncefah/TimeTableAlerter/internal/controllers/users"
 
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/sirupsen/logrus"
@@ -17,13 +16,6 @@ import (
 func main() {
 	r := chi.NewRouter()
 
-	r.Route("/users", func(r chi.Router) { // route /users
-		r.Get("/", users.GetUsers)            // GET /users
-		r.Route("/{id}", func(r chi.Router) { // route /users/{id}
-			r.Use(users.Context)      // Use Context method to get user ID
-			r.Get("/", users.GetUser) // GET /users/{id}
-		})
-	})
 	r.Route("/agendas", func(r chi.Router) {
 		r.Get("/", agendas.GetAgendas)
 
@@ -53,10 +45,7 @@ func init() {
 		logrus.Fatalf("error while opening database : %s", err.Error())
 	}
 	schemes := []string{
-		`CREATE TABLE IF NOT EXISTS users (
-			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
-			name VARCHAR(255) NOT NULL
-		);`,
+
 		`CREATE TABLE IF NOT EXISTS agendas (
 			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
 			name VARCHAR(255) NOT NULL,
