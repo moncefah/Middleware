@@ -5,12 +5,11 @@ import (
 	"net/http"
 
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
-	"github.com/moncefah/TimeTableAlerter/internal/services/agendas"
 )
 
-func GetAgendas(w http.ResponseWriter, _ *http.Request) {
+func (c *Controller) GetAgendas(w http.ResponseWriter, _ *http.Request) {
 	// calling service
-	agendas, err := agendas.GetAllAgendas()
+	agendas, err := c.service.GetAllAgendas()
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)

@@ -1,66 +1,70 @@
 package agendas
 
 import (
+	"database/sql"
+
 	"github.com/gofrs/uuid"
-	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
 )
 
-func GetAllAgendas() ([]models.Agenda, error) {
-	db, err := helpers.OpenDB()
-	if err != nil {
-		return nil, err
-	}
-	rows, err := db.Query("SELECT * FROM agendas")
-	helpers.CloseDB(db)
-	if err != nil {
-		return nil, err
-	}
+type Repository struct {
+	db *sql.DB
+}
 
-	agendas := []models.Agenda{}
+func NewRepository(db *sql.DB) *Repository {
+	return &Repository{db: db}
+}
+
+// GetAllAgendas retrieves all agendas from database
+func (r *Repository) GetAllAgendas() ([]models.Agenda, error) {
+	rows, err := r.db.Query(`
+		SELECT *
+		FROM agendas
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var agendas []models.Agenda
+
 	for rows.Next() {
-		var data models.Agenda
-		err = rows.Scan(&data.ID, &data.Name, &data.UcaID)
-		if err != nil {
+		var agenda models.Agenda
+		if err := rows.Scan(&agenda.ID, &agenda.Name, &agenda.UcaID); err != nil {
 			return nil, err
 		}
-		agendas = append(agendas, data)
+		agendas = append(agendas, agenda)
 	}
-	_ = rows.Close()
 
-	return agendas, err
-
-}
-func GetAgendaById(id uuid.UUID) (*models.Agenda, error) {
-	db, err := helpers.OpenDB()
-	if err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	row := db.QueryRow("SELECT * FROM agendas WHERE id=?", id.String())
-	helpers.CloseDB(db)
-
-	var data models.Agenda
-	err = row.Scan(&data.ID, &data.Name, &data.UcaID)
-	if err != nil {
-		return nil, err
-	}
-	return &data, err
+	return agendas, nil
 }
 
-func CreateAgenda(agenda *models.Agenda) (*models.Agenda, error) {
+// GetAgendaById retrieves a single agenda by its ID
+func (r *Repository) GetAgendaById(id uuid.UUID) (*models.Agenda, error) {
+	var agenda models.Agenda
 
-	db, err := helpers.OpenDB()
+	err := r.db.QueryRow(`
+		SELECT id, name, uca_id
+		FROM agendas
+		WHERE id = $1
+	`, id).Scan(&agenda.ID, &agenda.Name, &agenda.UcaID)
+
 	if err != nil {
 		return nil, err
 	}
-	_, err = db.Exec(
-		`INSERT INTO agendas (id, name, uca_id) VALUES (?, ?, ?)`,
-		agenda.ID,
-		agenda.Name,
-		agenda.UcaID,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return agenda, nil
+
+	return &agenda, nil
+}
+
+// CreateAgenda inserts a new agenda into database
+func (r *Repository) CreateAgenda(agenda *models.Agenda) error {
+	_, err := r.db.Exec(`
+		INSERT INTO agendas (id, name, uca_id)
+		VALUES ($1, $2, $3)
+	`, agenda.ID, agenda.Name, agenda.UcaID)
+
+	return err
 }

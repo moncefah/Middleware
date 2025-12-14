@@ -6,14 +6,13 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
-	"github.com/moncefah/TimeTableAlerter/internal/services/agendas"
 )
 
-func GetAgenda(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetAgenda(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	agendaId, _ := ctx.Value("agendaId").(uuid.UUID) // getting key set in context.go
 
-	agenda, err := agendas.GetAgendaById(agendaId)
+	agenda, err := c.service.GetAgendaById(agendaId)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)
