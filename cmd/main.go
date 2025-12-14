@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
+	"github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/users"
 
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
@@ -29,6 +30,15 @@ func main() {
 		r.Route("/{id}", func(r chi.Router) {
 			r.Use(agendas.Context)
 			r.Get("/", agendas.GetAgenda)
+
+		})
+	})
+	r.Route("/alerts", func(r chi.Router) {
+		r.Get("/", alerts.GetAlerts)
+
+		r.Route("/{id}", func(r chi.Router) {
+			r.Use(alerts.Context)
+			r.Get("/", alerts.GetAlert)
 
 		})
 	})

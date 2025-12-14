@@ -1,7 +1,6 @@
 package agendas
 
 import (
-	"fmt"
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
@@ -33,7 +32,6 @@ func GetAllAgendas() ([]models.Agenda, error) {
 
 }
 func GetAgendaById(id uuid.UUID) (*models.Agenda, error) {
-	fmt.Print(id)
 	db, err := helpers.OpenDB()
 	if err != nil {
 		return nil, err

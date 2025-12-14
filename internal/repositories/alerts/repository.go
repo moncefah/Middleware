@@ -1,48 +1,46 @@
-package agendas
+package alerts
 
 import (
-	"fmt"
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
 )
 
-func GetAllAgendas() ([]models.Agenda, error) {
+func GetAllAlerts() ([]models.Alert, error) {
 	db, err := helpers.OpenDB()
 	if err != nil {
 		return nil, err
 	}
-	rows, err := db.Query("SELECT * FROM agendas")
+	rows, err := db.Query("SELECT * FROM alerts")
 	helpers.CloseDB(db)
 	if err != nil {
 		return nil, err
 	}
 
-	agendas := []models.Agenda{}
+	alerts := []models.Alert{}
 	for rows.Next() {
-		var data models.Agenda
-		err = rows.Scan(&data.ID, &data.Name, &data.UcaID)
+		var data models.Alert
+		err = rows.Scan(&data.ID, &data.AgendaID, &data.Email)
 		if err != nil {
 			return nil, err
 		}
-		agendas = append(agendas, data)
+		alerts = append(alerts, data)
 	}
 	_ = rows.Close()
 
-	return agendas, err
+	return alerts, err
 
 }
-func GetAgendaById(id uuid.UUID) (*models.Agenda, error) {
-	fmt.Print(id)
+func GetAlertById(id uuid.UUID) (*models.Alert, error) {
 	db, err := helpers.OpenDB()
 	if err != nil {
 		return nil, err
 	}
-	row := db.QueryRow("SELECT * FROM agendas WHERE id=?", id.String())
+	row := db.QueryRow("SELECT * FROM alerts WHERE id=?", id.String())
 	helpers.CloseDB(db)
 
-	var data models.Agenda
-	err = row.Scan(&data.ID, &data.Name, &data.UcaID)
+	var data models.Alert
+	err = row.Scan(&data.ID, &data.AgendaID, &data.Email)
 	if err != nil {
 		return nil, err
 	}
