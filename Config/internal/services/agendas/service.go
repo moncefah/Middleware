@@ -2,7 +2,6 @@ package agendas
 
 import (
 	"database/sql"
-
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/dto"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
@@ -66,6 +65,17 @@ func (s *Service) CreateAgenda(agendaReqDto *dto.CreateAgendaRequest) error {
 	}
 
 	if err := s.repository.CreateAgenda(&agenda); err != nil {
+		logrus.Errorf("error creating agenda: %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Something went wrong while creating agenda",
+		}
+	}
+
+	return nil
+}
+func (s *Service) UpdateAgenda(agendaDto *models.Agenda) error {
+
+	if err := s.repository.UpdateAgenda(agendaDto); err != nil {
 		logrus.Errorf("error creating agenda: %s", err.Error())
 		return &models.ErrorGeneric{
 			Message: "Something went wrong while creating agenda",

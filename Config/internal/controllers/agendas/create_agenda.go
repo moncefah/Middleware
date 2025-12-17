@@ -2,6 +2,7 @@ package agendas
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/moncefah/TimeTableAlerter/internal/dto"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"net/http"
@@ -19,6 +20,7 @@ func (c *Controller) CreateAgenda(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	fmt.Print(agenda)
 
 	// agenda.ID == uuid.Nil here (zero value)
 

@@ -2,9 +2,11 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
+	"github.com/moncefah/TimeTableAlerter/internal/models"
 	"github.com/sirupsen/logrus"
 	"net/http"
 
@@ -47,6 +49,7 @@ func main() {
 
 		})
 		r.Post("/", agendaControl.CreateAgenda)
+		r.Put("/", agendaControl.UpdateAgenda)
 
 	})
 	r.Route("/alerts", func(r chi.Router) {
@@ -58,7 +61,13 @@ func main() {
 
 		})
 		r.Post("/", alertControl.CreateAlert)
+
 	})
+
+	id, _ := uuid.FromString("c01860f7-731d-4f3c-99e8-d2b59ffb10fd")
+	if err := agendaRepository.UpdateAgenda(&models.Agenda{ID: id, Name: "The Bay Harbour Butcher", UcaID: "UCA-DXT-001"}); err != nil {
+		print("something went wrong")
+	}
 
 	logrus.Info("[INFO] Web server started. Now listening on *:8080")
 	logrus.Fatalln(http.ListenAndServe(":8080", r))

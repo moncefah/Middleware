@@ -68,3 +68,16 @@ func (r *Repository) CreateAgenda(agenda *models.Agenda) error {
 
 	return err
 }
+func (r *Repository) UpdateAgenda(agenda *models.Agenda) error {
+	_, err := r.db.Exec(`
+	UPDATE agendas
+	SET name = ?, uca_id = ?
+	WHERE id = ?
+`,
+		agenda.Name,
+		agenda.UcaID,
+		agenda.ID,
+	)
+	return err
+
+}

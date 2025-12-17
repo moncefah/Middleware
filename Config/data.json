@@ -1,13 +1,13 @@
 [
-  {"uca_id":"UCA-DXT-001","name":"Dexter Morgan"},
-  {"uca_id":"UCA-DXT-002","name":"Debra Morgan"},
-  {"uca_id":"UCA-DXT-003","name":"Harry Morgan"},
-  {"uca_id":"UCA-DXT-004","name":"Rita Bennett"},
-  {"uca_id":"UCA-DXT-005","name":"James Doakes"},
-  {"uca_id":"UCA-DXT-006","name":"Angel Batista"},
-  {"uca_id":"UCA-DXT-007","name":"Maria LaGuerta"},
-  {"uca_id":"UCA-DXT-008","name":"Hannah McKay"},
-  {"uca_id":"UCA-DXT-009","name":"Lumen Pierce"},
-  {"uca_id":"UCA-DXT-010","name":"Trinity Killer"}
+  {"ucaId":"UCA-DXT-001","name":"Dexter Morgan"},
+  {"ucaId":"UCA-DXT-002","name":"Debra Morgan"},
+  {"ucaId":"UCA-DXT-003","name":"Harry Morgan"},
+  {"ucaId":"UCA-DXT-004","name":"Rita Bennett"},
+  {"ucaId":"UCA-DXT-005","name":"James Doakes"},
+  {"ucaId":"UCA-DXT-006","name":"Angel Batista"},
+  {"ucaId":"UCA-DXT-007","name":"Maria LaGuerta"},
+  {"ucaId":"UCA-DXT-008","name":"Hannah McKay"},
+  {"ucaId":"UCA-DXT-009","name":"Lumen Pierce"},
+  {"ucaId":"UCA-DXT-010","name":"Trinity Killer"}
 ]
 
