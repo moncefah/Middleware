@@ -78,7 +78,18 @@ func (s *Service) UpdateAgenda(agendaDto *models.Agenda) error {
 	if err := s.repository.UpdateAgenda(agendaDto); err != nil {
 		logrus.Errorf("error creating agenda: %s", err.Error())
 		return &models.ErrorGeneric{
-			Message: "Something went wrong while creating agenda",
+			Message: "Something went wrong while updating agenda",
+		}
+	}
+
+	return nil
+}
+func (s *Service) DeleteAgenda(id *uuid.UUID) error {
+
+	if err := s.repository.DeleteAgenda(id); err != nil {
+		logrus.Errorf("error creating agenda: %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Something went wrong while deleting agenda",
 		}
 	}
 

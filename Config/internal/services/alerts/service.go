@@ -72,3 +72,4 @@ func (s *Service) CreateAlert(alertReqDto *dto.CreateAlertRequest) error {
 
 	return nil
 }
+

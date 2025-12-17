@@ -81,3 +81,15 @@ func (r *Repository) UpdateAgenda(agenda *models.Agenda) error {
 	return err
 
 }
+
+func (r *Repository) DeleteAgenda(id *uuid.UUID) error {
+	_, err := r.db.Exec(`
+	DELETE FROM agendas
+	
+	WHERE id = ?
+`,
+		id,
+	)
+	return err
+
+}
