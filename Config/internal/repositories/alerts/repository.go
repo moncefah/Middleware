@@ -47,11 +47,15 @@ func (r *Repository) GetAlertById(id uuid.UUID) (*models.Alert, error) {
 	return &data, err
 }
 
-func (r *Repository) CreateAlert(agenda *models.Agenda) error {
+func (r *Repository) CreateAlert(alert *models.Alert) error {
 	_, err := r.db.Exec(`
-		INSERT INTO agendas (id, name, uca_id)
-		VALUES ($1, $2, $3)
-	`, agenda.ID, agenda.Name, agenda.UcaID)
+		INSERT INTO alerts (id, agenda_id, email)
+		VALUES (?, ?, ?)
+	`,
+		alert.ID.String(),
+		alert.AgendaID.String(),
+		alert.Email,
+	)
 
 	return err
 }

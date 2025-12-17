@@ -57,6 +57,7 @@ func main() {
 			r.Get("/", alertControl.GetAlert)
 
 		})
+		r.Post("/", alertControl.CreateAlert)
 	})
 
 	logrus.Info("[INFO] Web server started. Now listening on *:8080")

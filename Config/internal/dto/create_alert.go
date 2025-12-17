@@ -1,8 +1,8 @@
 package dto
 
-import "github.com/google/uuid"
+import "github.com/gofrs/uuid"
 
-type CreateALertRequest struct {
+type CreateAlertRequest struct {
 	AgendaId uuid.UUID `json:"agenda_id"`
 	Email    string    `json:"email"`
 }

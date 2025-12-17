@@ -3,6 +3,7 @@ package alerts
 import (
 	"database/sql"
 	"fmt"
+	"github.com/moncefah/TimeTableAlerter/internal/dto"
 
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
@@ -47,4 +48,27 @@ func (s *Service) GetAlertById(id uuid.UUID) (*models.Alert, error) {
 	}
 
 	return alert, err
+}
+func (s *Service) CreateAlert(alertReqDto *dto.CreateAlertRequest) error {
+	newID, err := uuid.NewV4()
+	if err != nil {
+		logrus.Errorf("error generating uuid: %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Failed to generate agenda ID",
+		}
+	}
+	agenda := models.Alert{
+		ID:       newID,
+		AgendaID: alertReqDto.AgendaId,
+		Email:    alertReqDto.Email,
+	}
+
+	if err := s.repository.CreateAlert(&agenda); err != nil {
+		logrus.Errorf("error creating alert: %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Something went wrong while creating alert",
+		}
+	}
+
+	return nil
 }
