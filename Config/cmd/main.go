@@ -23,6 +23,7 @@ func main() {
 	if err := helpers.InitSchema(db); err != nil {
 		logrus.Fatalf("error while Initiating database schemas : %s", err.Error())
 	}
+
 	agendaRepository := agendaRepo.NewRepository(db)
 	agendaService := agendaServ.NewService(agendaRepository)
 	agendaControl := agendaCtrl.NewController(agendaService)
@@ -37,8 +38,8 @@ func main() {
 			r.Get("/", agendaControl.GetAgenda)
 
 		})
-
 		r.Post("/", agendaControl.CreateAgenda)
+
 	})
 	r.Route("/alerts", func(r chi.Router) {
 		r.Get("/", alerts.GetAlerts)

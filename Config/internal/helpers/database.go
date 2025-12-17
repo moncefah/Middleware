@@ -12,7 +12,6 @@ func OpenDB() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	// IMPORTANT : une seule connexion pour SQLite
 	db.SetMaxOpenConns(1)
 
