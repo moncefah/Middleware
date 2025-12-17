@@ -9,6 +9,7 @@ func InitSchema(db *sql.DB) error {
 			name VARCHAR(255) NOT NULL,
 			uca_id VARCHAR(255)
 		);`,
+
 		`CREATE TABLE IF NOT EXISTS alerts (
 			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
 			agenda_id VARCHAR(255) NOT NULL,

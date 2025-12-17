@@ -11,6 +11,10 @@ import (
 	agendaCtrl "github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
 	agendaRepo "github.com/moncefah/TimeTableAlerter/internal/repositories/agendas"
 	agendaServ "github.com/moncefah/TimeTableAlerter/internal/services/agendas"
+
+	alertCtrl "github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
+	alertRepo "github.com/moncefah/TimeTableAlerter/internal/repositories/alerts"
+	alertServ "github.com/moncefah/TimeTableAlerter/internal/services/alerts"
 )
 
 func main() {
@@ -28,6 +32,10 @@ func main() {
 	agendaService := agendaServ.NewService(agendaRepository)
 	agendaControl := agendaCtrl.NewController(agendaService)
 
+	alertRepository := alertRepo.NewRepository(db)
+	alertService := alertServ.NewService(alertRepository)
+	alertControl := alertCtrl.NewController(alertService)
+
 	r := chi.NewRouter()
 
 	r.Route("/agendas", func(r chi.Router) {
@@ -42,11 +50,11 @@ func main() {
 
 	})
 	r.Route("/alerts", func(r chi.Router) {
-		r.Get("/", alerts.GetAlerts)
+		r.Get("/", alertControl.GetAlerts)
 
 		r.Route("/{id}", func(r chi.Router) {
 			r.Use(alerts.Context)
-			r.Get("/", alerts.GetAlert)
+			r.Get("/", alertControl.GetAlert)
 
 		})
 	})

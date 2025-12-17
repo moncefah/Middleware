@@ -10,10 +10,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func GetAllAlert() ([]models.Alert, error) {
+type Service struct {
+	repository *repository.Repository
+}
+
+func NewService(repository *repository.Repository) *Service {
+	return &Service{repository: repository}
+}
+func (s *Service) GetAllAlert() ([]models.Alert, error) {
 	var err error
 	// calling repository
-	alerts, err := repository.GetAllAlerts()
+	alerts, err := s.repository.GetAllAlerts()
 	// managing errors
 	if err != nil {
 		logrus.Errorf("error retrieving users : %s", err.Error())
@@ -25,8 +32,8 @@ func GetAllAlert() ([]models.Alert, error) {
 	return alerts, nil
 }
 
-func GetAlertById(id uuid.UUID) (*models.Alert, error) {
-	alert, err := repository.GetAlertById(id)
+func (s *Service) GetAlertById(id uuid.UUID) (*models.Alert, error) {
+	alert, err := s.repository.GetAlertById(id)
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
 			return nil, &models.ErrorNotFound{
