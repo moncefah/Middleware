@@ -72,4 +72,25 @@ func (s *Service) CreateAlert(alertReqDto *dto.CreateAlertRequest) error {
 
 	return nil
 }
+func (s *Service) UpdateAlert(alertDto *models.Alert) error {
+	fmt.Print(alertDto)
+	if err := s.repository.UpdateAlert(alertDto); err != nil {
+		logrus.Errorf("error creating agenda: %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Something went wrong while updating alert",
+		}
+	}
 
+	return nil
+}
+func (s *Service) DeleteAlert(id *uuid.UUID) error {
+
+	if err := s.repository.DeleteAlert(id); err != nil {
+		logrus.Errorf("error creating agenda: %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Something went wrong while deleting alert",
+		}
+	}
+
+	return nil
+}

@@ -2,6 +2,7 @@ package alerts
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
 )
@@ -60,4 +61,30 @@ func (r *Repository) CreateAlert(alert *models.Alert) error {
 	return err
 }
 
+func (r *Repository) UpdateAlert(alert *models.Alert) error {
+	fmt.Print(alert)
+	_, err := r.db.Exec(`
+	UPDATE alerts
+	SET agenda_id = ?, email = ?
+	WHERE id = ?
+`,
 
+		alert.AgendaID,
+		alert.Email,
+		alert.ID,
+	)
+	return err
+
+}
+
+func (r *Repository) DeleteAlert(id *uuid.UUID) error {
+	_, err := r.db.Exec(`
+	DELETE FROM alerts
+	
+	WHERE id = ?
+`,
+		id,
+	)
+	return err
+
+}

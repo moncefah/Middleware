@@ -3,18 +3,16 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
+	agendaCtrl "github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
 	"github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
+	alertCtrl "github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
+	agendaRepo "github.com/moncefah/TimeTableAlerter/internal/repositories/agendas"
+	alertRepo "github.com/moncefah/TimeTableAlerter/internal/repositories/alerts"
+	agendaServ "github.com/moncefah/TimeTableAlerter/internal/services/agendas"
+	alertServ "github.com/moncefah/TimeTableAlerter/internal/services/alerts"
 	"github.com/sirupsen/logrus"
 	"net/http"
-
-	agendaCtrl "github.com/moncefah/TimeTableAlerter/internal/controllers/agendas"
-	agendaRepo "github.com/moncefah/TimeTableAlerter/internal/repositories/agendas"
-	agendaServ "github.com/moncefah/TimeTableAlerter/internal/services/agendas"
-
-	alertCtrl "github.com/moncefah/TimeTableAlerter/internal/controllers/alerts"
-	alertRepo "github.com/moncefah/TimeTableAlerter/internal/repositories/alerts"
-	alertServ "github.com/moncefah/TimeTableAlerter/internal/services/alerts"
 )
 
 func main() {
@@ -66,4 +64,5 @@ func main() {
 
 	logrus.Info("[INFO] Web server started. Now listening on *:8080")
 	logrus.Fatalln(http.ListenAndServe(":8080", r))
+
 }
