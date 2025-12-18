@@ -22,7 +22,6 @@ func (c *Controller) DeleteAgenda(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	print(id_to_delete.ID == "")
 
 	// agenda.ID == uuid.Nil here (zero value)
 	uuid_id, _ := uuid.FromString(id_to_delete.ID)
