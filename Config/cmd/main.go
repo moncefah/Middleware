@@ -46,7 +46,6 @@ func main() {
 		})
 		r.Post("/", agendaControl.CreateAgenda)
 		r.Put("/", agendaControl.UpdateAgenda)
-
 		r.Delete("/", agendaControl.DeleteAgenda)
 
 	})
@@ -59,7 +58,8 @@ func main() {
 
 		})
 		r.Post("/", alertControl.CreateAlert)
-
+		r.Put("/", alertControl.UpdateAlert)
+		r.Delete("/", alertControl.DeleteAlert)
 	})
 
 	logrus.Info("[INFO] Web server started. Now listening on *:8080")
