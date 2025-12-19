@@ -2,3 +2,8 @@
 .idea/
 */__pycache__
 */.vscode
+# OS
+.DS_Store
+
+# Databases
+*.db
