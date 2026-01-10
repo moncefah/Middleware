@@ -2,14 +2,38 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	events_consumers "github.com/moncefah/TimeTableAlerter/internal/consumers/events"
 	events "github.com/moncefah/TimeTableAlerter/internal/controllers/events"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	_ "github.com/moncefah/TimeTableAlerter/internal/models"
+	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 )
 
 func main() {
+	natsURL := os.Getenv("NATS_URL")
+	if natsURL == "" {
+		natsURL = nats.DefaultURL
+	}
+
+	if err := helpers.InitNats(natsURL); err != nil {
+		logrus.Fatalf("error while connecting to nats: %s", err.Error())
+	}
+	defer helpers.CloseNats()
+
+	go func() {
+		consumer, err := events_consumers.EventConsumer()
+		if err != nil {
+			logrus.Warnf("error during nats consumer creation : %v", err)
+			return
+		}
+		if err := events_consumers.Consume(*consumer); err != nil {
+			logrus.Warnf("error during nats consume : %v", err)
+		}
+	}()
+
 	r := chi.NewRouter()
 	r.Route("/events", func(r chi.Router) { // route /events
 		r.Get("/", events.GetEvents)          // GET /users
