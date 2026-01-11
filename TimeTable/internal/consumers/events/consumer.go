@@ -2,6 +2,8 @@ package events
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -114,7 +116,8 @@ func handleMessage(data []byte, publisher *mq.AlertsPublisher) error {
 
 	changes := diffEvent(*existing, event)
 	if len(changes) == 0 {
-		return nil
+		event.ID = existing.ID
+		return repository.UpdateEvent(event)
 	}
 
 	event.ID = existing.ID
@@ -145,24 +148,17 @@ func toEvent(attributes map[string]string) (models.Event, error) {
 	if err != nil {
 		return models.Event{}, fmt.Errorf("parse DTEND: %w", err)
 	}
-	lastUpdate, err := parseICalTime(attributes["LAST-MODIFIED"])
-	if err != nil {
-		lastUpdate, err = parseICalTime(attributes["DTSTAMP"])
-		if err != nil {
-			lastUpdate = time.Now().UTC()
-		}
+	event := models.Event{
+		AgendaID: uuid.Nil,
+		UID:      attributes["UID"],
+		Name:     attributes["SUMMARY"],
+		Start:    start,
+		End:      end,
+		Location: attributes["LOCATION"],
+		LastSeen: time.Now().UTC(),
 	}
-
-	return models.Event{
-		AgendaIDs:   []string{},
-		UID:         attributes["UID"],
-		Description: attributes["DESCRIPTION"],
-		Name:        attributes["SUMMARY"],
-		Start:       start,
-		End:         end,
-		Location:    attributes["LOCATION"],
-		LastUpdate:  lastUpdate,
-	}, nil
+	event.Checksum = buildChecksum(event)
+	return event, nil
 }
 
 func parseICalTime(value string) (time.Time, error) {
@@ -183,9 +179,6 @@ func diffEvent(existing models.Event, incoming models.Event) map[string][2]strin
 	if existing.Name != incoming.Name {
 		changes["summary"] = [2]string{existing.Name, incoming.Name}
 	}
-	if existing.Description != incoming.Description {
-		changes["description"] = [2]string{existing.Description, incoming.Description}
-	}
 	if !existing.Start.Equal(incoming.Start) {
 		changes["start"] = [2]string{existing.Start.Format(time.RFC3339), incoming.Start.Format(time.RFC3339)}
 	}
@@ -195,6 +188,23 @@ func diffEvent(existing models.Event, incoming models.Event) map[string][2]strin
 	if existing.Location != incoming.Location {
 		changes["location"] = [2]string{existing.Location, incoming.Location}
 	}
+	if existing.AgendaID != incoming.AgendaID {
+		changes["agendaId"] = [2]string{existing.AgendaID.String(), incoming.AgendaID.String()}
+	}
 
 	return changes
+}
+
+func buildChecksum(event models.Event) string {
+	payload := fmt.Sprintf(
+		"%s|%s|%s|%s|%s|%s",
+		event.UID,
+		event.Name,
+		event.Start.Format(time.RFC3339),
+		event.End.Format(time.RFC3339),
+		event.Location,
+		event.AgendaID.String(),
+	)
+	sum := sha256.Sum256([]byte(payload))
+	return hex.EncodeToString(sum[:])
 }

@@ -54,14 +54,14 @@ func init() {
 	schemes := []string{
 		`CREATE TABLE IF NOT EXISTS events (
 		id TEXT PRIMARY KEY NOT NULL UNIQUE,
-		agenda_ids TEXT NOT NULL DEFAULT '[]',  -- JSON array
+		agenda_id TEXT,                       -- single agenda UUID
 		uid TEXT NOT NULL,
-		description TEXT,
 		name TEXT NOT NULL,
-		start TEXT NOT NULL,                   -- RFC3339
-		end TEXT NOT NULL,                     -- RFC3339
+		start TEXT NOT NULL,                  -- RFC3339
+		end TEXT NOT NULL,                    -- RFC3339
 		location TEXT,
-		last_update TEXT NOT NULL              -- RFC3339
+		checksum TEXT NOT NULL,
+		last_seen TEXT NOT NULL               -- RFC3339
 	);`,
 	}
 
