@@ -2,7 +2,8 @@ package events
 
 import (
 	"database/sql"
-	"encoding/json"
+	"time"
+
 	"github.com/gofrs/uuid"
 	"github.com/moncefah/TimeTableAlerter/internal/helpers"
 	"github.com/moncefah/TimeTableAlerter/internal/models"
@@ -19,14 +20,14 @@ func GetAllEvents() ([]models.Event, error) {
 	rows, err := db.Query(`
 		SELECT 
 			id,
-			agenda_ids,
+			agenda_id,
 			uid,
-			description,
 			name,
 			start,
 			end,
 			location,
-			last_update
+			checksum,
+			last_seen
 		FROM events
 	`)
 	if err != nil {
@@ -40,23 +41,23 @@ func GetAllEvents() ([]models.Event, error) {
 		var e models.Event
 
 		var (
-			idStr        string
-			agendaIDsStr string
-			startStr     string
-			endStr       string
-			updateStr    string
+			idStr       string
+			agendaID    string
+			startStr    string
+			endStr      string
+			lastSeenStr string
 		)
 
 		err := rows.Scan(
 			&idStr,
-			&agendaIDsStr,
+			&agendaID,
 			&e.UID,
-			&e.Description,
 			&e.Name,
 			&startStr,
 			&endStr,
 			&e.Location,
-			&updateStr,
+			&e.Checksum,
+			&lastSeenStr,
 		)
 		if err != nil {
 			logrus.Error("scan error: ", err)
@@ -65,10 +66,12 @@ func GetAllEvents() ([]models.Event, error) {
 
 		// conversions
 		e.ID, _ = uuid.FromString(idStr)
-		_ = json.Unmarshal([]byte(agendaIDsStr), &e.AgendaIDs)
+		if agendaID != "" {
+			e.AgendaID, _ = uuid.FromString(agendaID)
+		}
 		e.Start, _ = helpers.ParseTime(startStr)
 		e.End, _ = helpers.ParseTime(endStr)
-		e.LastUpdate, _ = helpers.ParseTime(updateStr)
+		e.LastSeen, _ = helpers.ParseTime(lastSeenStr)
 
 		events = append(events, e)
 	}
@@ -87,14 +90,14 @@ func GetEventById(id uuid.UUID) (*models.Event, error) {
 	row := db.QueryRow(`
 		SELECT 
 			id,
-			agenda_ids,
+			agenda_id,
 			uid,
-			description,
 			name,
 			start,
 			end,
 			location,
-			last_update
+			checksum,
+			last_seen
 		FROM events
 		WHERE id = ?
 	`, id.String())
@@ -102,23 +105,23 @@ func GetEventById(id uuid.UUID) (*models.Event, error) {
 	var e models.Event
 
 	var (
-		idStr        string
-		agendaIDsStr string
-		startStr     string
-		endStr       string
-		updateStr    string
+		idStr       string
+		agendaID    string
+		startStr    string
+		endStr      string
+		lastSeenStr string
 	)
 
 	err = row.Scan(
 		&idStr,
-		&agendaIDsStr,
+		&agendaID,
 		&e.UID,
-		&e.Description,
 		&e.Name,
 		&startStr,
 		&endStr,
 		&e.Location,
-		&updateStr,
+		&e.Checksum,
+		&lastSeenStr,
 	)
 
 	if err == sql.ErrNoRows {
@@ -129,10 +132,149 @@ func GetEventById(id uuid.UUID) (*models.Event, error) {
 	}
 
 	e.ID, _ = uuid.FromString(idStr)
-	_ = json.Unmarshal([]byte(agendaIDsStr), &e.AgendaIDs)
+	if agendaID != "" {
+		e.AgendaID, _ = uuid.FromString(agendaID)
+	}
 	e.Start, _ = helpers.ParseTime(startStr)
 	e.End, _ = helpers.ParseTime(endStr)
-	e.LastUpdate, _ = helpers.ParseTime(updateStr)
+	e.LastSeen, _ = helpers.ParseTime(lastSeenStr)
 
 	return &e, nil
+}
+
+// GetEventByUID récupère un événement selon son UID
+func GetEventByUID(uid string) (*models.Event, error) {
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return nil, err
+	}
+	defer helpers.CloseDB(db)
+
+	row := db.QueryRow(`
+		SELECT
+			id,
+			agenda_id,
+			uid,
+			name,
+			start,
+			end,
+			location,
+			checksum,
+			last_seen
+		FROM events
+		WHERE uid = ?
+	`, uid)
+
+	var e models.Event
+
+	var (
+		idStr       string
+		agendaID    string
+		startStr    string
+		endStr      string
+		lastSeenStr string
+	)
+
+	err = row.Scan(
+		&idStr,
+		&agendaID,
+		&e.UID,
+		&e.Name,
+		&startStr,
+		&endStr,
+		&e.Location,
+		&e.Checksum,
+		&lastSeenStr,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	e.ID, _ = uuid.FromString(idStr)
+	if agendaID != "" {
+		e.AgendaID, _ = uuid.FromString(agendaID)
+	}
+	e.Start, _ = helpers.ParseTime(startStr)
+	e.End, _ = helpers.ParseTime(endStr)
+	e.LastSeen, _ = helpers.ParseTime(lastSeenStr)
+
+	return &e, nil
+}
+
+// CreateEvent insère un événement en base
+func CreateEvent(event models.Event) error {
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return err
+	}
+	defer helpers.CloseDB(db)
+
+	_, err = db.Exec(`
+		INSERT INTO events (
+			id,
+			agenda_id,
+			uid,
+			name,
+			start,
+			end,
+			location,
+			checksum,
+			last_seen
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`,
+		event.ID.String(),
+		agendaIDValue(event.AgendaID),
+		event.UID,
+		event.Name,
+		event.Start.Format(time.RFC3339),
+		event.End.Format(time.RFC3339),
+		event.Location,
+		event.Checksum,
+		event.LastSeen.Format(time.RFC3339),
+	)
+	return err
+}
+
+// UpdateEvent met à jour un événement en base
+func UpdateEvent(event models.Event) error {
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return err
+	}
+	defer helpers.CloseDB(db)
+
+	_, err = db.Exec(`
+		UPDATE events
+		SET agenda_id = ?,
+			uid = ?,
+			name = ?,
+			start = ?,
+			end = ?,
+			location = ?,
+			checksum = ?,
+			last_seen = ?
+		WHERE id = ?
+	`,
+		agendaIDValue(event.AgendaID),
+		event.UID,
+		event.Name,
+		event.Start.Format(time.RFC3339),
+		event.End.Format(time.RFC3339),
+		event.Location,
+		event.Checksum,
+		event.LastSeen.Format(time.RFC3339),
+		event.ID.String(),
+	)
+	return err
+}
+
+func agendaIDValue(id uuid.UUID) string {
+	if id == uuid.Nil {
+		return ""
+	}
+	return id.String()
 }
